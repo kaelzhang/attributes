@@ -1,0 +1,36 @@
+{
+    "name": "attributes",
+    "description": "Apply flavored getter and setter to objects.",
+    "version": "0.1.0",
+    "homepage": "https://github.com/kaelzhang/attributes",
+    "author": {
+        "name": "Kael",
+        "email": "i@kael.me"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git://github.com/kaelzhang/attributes.git"
+    },
+    "bugs": {
+        "url": "https://github.com/kaelzhang/attributes/issues"
+    },
+    "licenses": [
+        {
+            "type": "MIT",
+            "url": "https://github.com/kaelzhang/attributes/blob/master/LICENSE-MIT"
+        }
+    ],
+    "engines": {
+        "node": ">= 0.6.0"
+    },
+    "scripts": {
+        "test": "make test"
+    },
+    "keywords": [],
+    "cortex": {
+        "dependencies": {
+            "util": "~1.0.0",
+            "clone": "~0.1.11"
+        }
+    }
+}
