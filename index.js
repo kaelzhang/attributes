@@ -163,7 +163,7 @@ function createSandBox(host){
 };
 
 
-var EXT = attrs._EXT;
+var EXT = attrs._EXT = {};
 
 ['addAttr', 'get', 'set'].forEach(function(name){
     EXT[name] = createPublicMethod(name);

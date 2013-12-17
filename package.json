@@ -14,12 +14,10 @@
     "bugs": {
         "url": "https://github.com/kaelzhang/attributes/issues"
     },
-    "licenses": [
-        {
-            "type": "MIT",
-            "url": "https://github.com/kaelzhang/attributes/blob/master/LICENSE-MIT"
-        }
-    ],
+    "licenses": [{
+        "type": "MIT",
+        "url": "https://github.com/kaelzhang/attributes/blob/master/LICENSE-MIT"
+    }],
     "engines": {
         "node": ">= 0.6.0"
     },
@@ -32,5 +30,10 @@
             "util": "~1.0.0",
             "clone": "~0.1.11"
         }
+    },
+    "dependencies": {
+        "clone": "~0.1.11",
+        "mocha": "~1.15.1",
+        "chai": "~1.8.1"
     }
 }
