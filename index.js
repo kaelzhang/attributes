@@ -9,7 +9,6 @@ var SETTER      = 'setter';
 var VALIDATOR   = 'validator';
 var READ_ONLY   = 'readOnly';
 var WRITE_ONCE  = 'writeOnce';
-var __SUPER_CLASS = 'super_';
 
 function NOOP (){};
 
@@ -147,44 +146,10 @@ function createPublicMethod(name){
 
 
 function createSandBox(host){
-    var class_ = host.constructor,
-        sandbox;
+    var attributes = host._ATTRS;
     
-    do{
-        if(sandbox = class_.ATTRS){
-            break;
-        }
-
-    } while(class_ = class_.prototype[__SUPER_CLASS]);
-    
-    return sandbox ? clone(sandbox) : {};
+    return attributes ? clone(attributes) : {};
 };
-
-
-/**
-
- ATTRS = {
-    attr: {
-        value: 100
-    },
-    
-    attrWithSetter: {
-        setter: function(){}
-    },
-    
-    attrWithProxySetter: {
-        setter: '_setTimeout'
-    },
-    
-    attrWithValidator: {
-        value: 100,
-        validator: function(v){
-            return v <= 100;
-        }
-    }
- };
-
- */
 
 
 var EXT = attrs._EXT;
@@ -200,6 +165,15 @@ attrs.patch = function (host, attributes) {
     }
 
     mix(host, EXT);
+
+    // mixed by `util.inherits`
+    var parent_attrs = host._ATTRS;
+
+    if ( parent_attrs ) {
+        mix(attributes, parent_attrs, false);
+    }
+
+    host._ATTRS = attributes;
 };
 
 /**
