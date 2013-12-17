@@ -8,7 +8,6 @@ var GETTER      = 'getter';
 var SETTER      = 'setter';
 var VALIDATOR   = 'validator';
 var READ_ONLY   = 'readOnly';
-var WRITE_ONCE  = 'writeOnce';
 
 function NOOP (){};
 
@@ -52,11 +51,6 @@ function setValue(host, attr, value){
         validator = getMethod(host, attr, VALIDATOR);
         
         pass = !validator || validator.call(host, value);
-    }
-    
-    if(pass && attr[WRITE_ONCE]){
-        delete attr[WRITE_ONCE];
-        attr[READ_ONLY] = TRUE;
     }
     
     if(pass){
@@ -105,11 +99,24 @@ function getMethod(host, attr, name){
  * @param {undefined=} undef
  */
 function createGetterSetter(host, sandbox, undef){
-    host.set = lang.overloadSetter( function(key, value){
+    function set (key, value) {
         var attr = sandbox[key];
         
         return attr ? setValue(this, attr, value) : false;
-    });
+    }
+
+    host.set = function (key, value) {
+        if ( util.isObject(key) ) {
+            var k;
+
+            for (k in key){
+                set.call(this, k, key[k]);
+            }
+
+        } else {
+            set.call(this, key, value);
+        }
+    };
     
     host.get = function(key){
         var attr = sandbox[key];
@@ -118,8 +125,8 @@ function createGetterSetter(host, sandbox, undef){
     };
     
     host.addAttr = function(key, setting){
-        sandbox[key] || (sandbox[key] = util.isObject(setting) ? 
-                            
+        sandbox[key] || (sandbox[key] = util.isObject(setting) ?
+
                             // it's important to clone the setting before mixing into the sandbox,
                             // or host.set method will ruin all reference
                             clone(setting) : 
