@@ -13,7 +13,6 @@ Patches the attibutes and utility methods to the constructor `ctor`.
 
 type `Function | Object`
 
-
 #### attrs
 
 type `Object`
@@ -96,8 +95,10 @@ Before anything taking its part, you should install [node](http://nodejs.org) an
 
 ### Install Cortex
 
-    # maybe you should use `sudo`
-    npm install -g cortex
+```sh
+# maybe you should use `sudo`
+npm install -g cortex
+```
 
 ### Using attributes In Your Project
 
