@@ -128,14 +128,14 @@ function createGetterSetter(host, sandbox, undef){
         return attr ? getValue(this, attr) : undef;
     };
     
-    host.addAttr = function(key, setting){
-        sandbox[key] || (sandbox[key] = util.isObject(setting) ?
-
-                            // it's important to clone the setting before mixing into the sandbox,
-                            // or host.set method will ruin all reference
-                            clone(setting) : 
-                            {}
-                        );
+    host.addAttr = function(key, setting, override){
+        if ( override || !sandbox[key] ) {
+            sandbox[key] = util.isObject(setting) ?
+                // it's important to clone the setting before mixing into the sandbox,
+                // or host.set method will ruin all reference
+                clone(setting) :
+                {};
+        }
     }
 };
 

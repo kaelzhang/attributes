@@ -1,66 +1,110 @@
 # attributes
 
-> Apply flavored getter and setter to objects.
-
-## Getting Started
-Before anything taking its part, you should install [node](http://nodejs.org) and "cortex".
-
-#### Install Node
-
-Visit [http://nodejs.org](http://nodejs.org), download and install the proper version of nodejs.
-
-#### Install Cortex
-
-    # maybe you should use `sudo`
-    npm install -g cortex
-
-## Using attributes In Your Project
-
-First, install 'attributes' directly with `cortex install` (recommended)
-	
-	cortex install attributes --save
-	
-or, you could update your package.json manually
-    
-    dependencies: {
-        'attributes': '<version-you-want>'
-    }
-    
-and install dependencies
-	
-	cortex install
-    
-Then, use `require` method in your module
-    
-    var attributes = require('attributes');
-    
-Finally, start cortex server
-    
-    cortex server
-    
-Then cortex will care all the rest.
+Apply flavored getter and setter to objects.
 
 
 ## API Documentation
 
-### attributes: constructor
-': constructor' means the `module.exports` of module 'attributes' is a constructor that we should use it with the `new` keyword
+### attributes.patch(ctor, attrs)
 
-	new attributes(options)
-	
-#### options
-- options.name {String}
+Patches the attibutes and utility methods to the constructor `ctor`.
+    
+#### ctor
+
+type `Function | Object`
 
 
+#### attrs
 
-### attributes.\<method-name\>(arguments)
-Means this is a static method of `module.exports`
+type `Object`
 
-#### arguments
-// arguments description here
+All keys are **optional**.
 
-### .\<method-name\>(arguments)
-Mean this is a method of the instance
+key       | type          | description
+--------- | ------------- | -------------------------
+value     | mixed         | the default value (optional)
+setter    | function(v)   | the return value will be the real value to be set. `v` is the original value by user.
+getter    | function(v)   | the return value will be the return value of `ins.get(key)` method. `v` is the saved value.
+validator | function(v)   | if returns false, the value will not be saved.
+readOnly  | boolean       | if `readOnly` is set to `true`, 
 
-#### arguments
-// arguments description here
+#### Examples
+
+```js
+function A(){}
+
+attributes.patch(A, {
+	a: {
+		value: 'AAA',
+		setter: function(v){
+			return v + '-new';
+		},
+		validator: function(v){
+			return typeof v === 'string';
+		},
+		getter: function(v){
+			return v;
+		}
+	}
+});
+```
+
+Then, the instances which created by `new A` will have **THREE** methods.
+
+### instance.get(key)
+
+Gets a value by key.
+
+#### returns
+
+If the specified key has a `getter`, the saved value will be passed to the getter as the first parameter, then the returnValue of the getter will be returned by `instance.get(key)`.
+
+For the example above:
+
+```js
+new A().get('a'); // returns 'AAA'
+```
+
+### instance.set(key, value)
+### instance.set(keyMap)
+
+Sets a value or a bunch of values.
+
+#### returns
+
+`Boolean` whether the value(s) has been set successfully.
+
+```js
+var ins = new A();
+ins.set('a', 1); // false, should be a string
+ins.set('a', 'B');
+ins.get('a'); // 'B-new', cooked by the setter
+```
+
+
+### instance.addAttr(key, attr=, override=false)
+
+Add a new key.
+
+- attr `Object` the attribute definition of the key
+- override `Boolean` whether should override existing attribute.
+
+
+## Installation
+
+Before anything taking its part, you should install [node](http://nodejs.org) and "cortex".
+
+### Install Cortex
+
+    # maybe you should use `sudo`
+    npm install -g cortex
+
+### Using attributes In Your Project
+
+First, install 'attributes' directly with `cortex install`
+    
+    cortex install attributes --save
+    
+Then, use `require` method in your module
+    
+    var attributes = require('attributes');

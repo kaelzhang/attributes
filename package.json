@@ -1,7 +1,7 @@
 {
     "name": "attributes",
     "description": "Apply flavored getter and setter to objects.",
-    "version": "0.1.0",
+    "version": "1.1.0",
     "homepage": "https://github.com/kaelzhang/attributes",
     "author": {
         "name": "Kael",
