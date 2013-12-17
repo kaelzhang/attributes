@@ -108,13 +108,17 @@ function createGetterSetter(host, sandbox, undef){
     host.set = function (key, value) {
         if ( util.isObject(key) ) {
             var k;
+            var ok = true;
 
             for (k in key){
-                set.call(this, k, key[k]);
+                // if the last one fails, do not skip setting
+                ok = set.call(this, k, key[k]) && ok;
             }
 
+            return ok;
+
         } else {
-            set.call(this, key, value);
+            return set.call(this, key, value);
         }
     };
     
