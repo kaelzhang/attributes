@@ -1,7 +1,7 @@
 {
-    "name": "attributes",
+    "name": "means",
     "description": "Apply flavored getter and setter to objects.",
-    "version": "1.1.1",
+    "version": "1.2.1",
     "homepage": "https://github.com/kaelzhang/attributes",
     "author": {
         "name": "Kael",
@@ -26,6 +26,7 @@
     },
     "keywords": [],
     "cortex": {
+        "name": "attributes",
         "dependencies": {
             "util": "~1.0.0",
             "clone": "~0.1.11"
