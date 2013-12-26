@@ -8,6 +8,7 @@ var GETTER      = 'getter';
 var SETTER      = 'setter';
 var VALIDATOR   = 'validator';
 var READ_ONLY   = 'readOnly';
+var WRITE_ONCE  = 'writeOnce';
 
 function NOOP (){};
 
@@ -30,12 +31,13 @@ function mix (receiver, supplier, override){
 
 attrs._mix = mix;
 
+
 /**
  * setter for class attributes
  * @private
  * @param {boolean} ghost inner use
-    if true, setValue will ignore all flags or validators and force to writing the new value
-    
+     if true, setValue will ignore all flags or validators and force to writing the new value
+     
  * @return {boolean} whether the new value has been successfully set
  */
 function setValue(host, attr, value){
@@ -44,6 +46,10 @@ function setValue(host, attr, value){
         validator,
         v;
 
+    if(!attr){
+        return false;
+    }
+
     if(attr[READ_ONLY]){
         pass = false;
         
@@ -51,6 +57,11 @@ function setValue(host, attr, value){
         validator = getMethod(host, attr, VALIDATOR);
         
         pass = !validator || validator.call(host, value);
+    }
+    
+    if(pass && attr[WRITE_ONCE]){
+        delete attr[WRITE_ONCE];
+        attr[READ_ONLY] = true;
     }
     
     if(pass){
@@ -62,7 +73,7 @@ function setValue(host, attr, value){
         }else{
         
             // mix object values
-            util.isObject(value) && util.isObject(v = attr.value) ? mix(v, value) : (attr.value = value);
+            attr.value = value;
         }
     }
     
@@ -73,7 +84,7 @@ function setValue(host, attr, value){
 /**
  * getter for class attributes
  */
-function getValue(host, attr, undef){
+function getValue(host, attr){
     var getter = getMethod(host, attr, GETTER),
         v = attr.value;
     
@@ -98,61 +109,100 @@ function getMethod(host, attr, name){
  * @param {Object} sandbox shadow copy of the attributes of a class instance
  * @param {undefined=} undef
  */
-function createGetterSetter(host, sandbox, undef){
-    function set (key, value) {
+function createGetterSetter(host, sandbox){
+    var undef;
+
+    function _get (host, key, sandbox) {
         var attr = sandbox[key];
         
-        return attr ? setValue(this, attr, value) : false;
+        return attr ? getValue(host, attr) : undef;
+    }
+    
+    function _getAll (host) {
+        var s = sandbox,
+            key,
+            ret = {};
+            
+        for(key in s){
+            ret[key] = _get(host, key, s);
+        }
+        
+        return ret;
     }
 
-    host.set = function (key, value) {
-        if ( util.isObject(key) ) {
-            var k;
-            var ok = true;
+    function _addAttr (key, setting){
+        sandbox[key] || (sandbox[key] = util.isObject(setting) ? 
+                            
+                            // it's important to clone the setting before mixing into the sandbox,
+                            // or host.set method will ruin all references
+                            clone(setting) : 
+                            {}
+                        );
+    }
 
-            for (k in key){
-                // if the last one fails, do not skip setting
-                ok = set.call(this, k, key[k]) && ok;
+    host.set = function(key, value){
+        var 
+        
+        attr, obj,
+        pass = true;
+        
+        if(util.isObject(key)){
+            obj = key;
+            
+            for(key in obj){
+                
+                // even if fail to pass, we should continue setting
+                pass = !!setValue(this, sandbox[key], obj[key]) && pass;
             }
-
-            return ok;
-
-        } else {
-            return set.call(this, key, value);
+            
+        }else{
+            pass = !!setValue(this, sandbox[key], value);
         }
+
+        return pass;
     };
     
     host.get = function(key){
-        var attr = sandbox[key];
-        
-        return attr ? getValue(this, attr) : undef;
+        return arguments.length ? _get(this, key, sandbox) : _getAll(this);
     };
     
-    host.addAttr = function(key, setting, override){
-        if ( override || !sandbox[key] ) {
-            sandbox[key] = util.isObject(setting) ?
-                // it's important to clone the setting before mixing into the sandbox,
-                // or host.set method will ruin all reference
-                clone(setting) :
-                {};
+    host.addAttr = function (key, setting) {
+        if ( util.isObject(key) ) {
+            var k;
+
+            for (k in key){
+                _addAttr(k, key[k]);
+            }
+
+        } else {
+            _addAttr(key, setting);
         }
-    }
+    };
+    
+    host.removeAttr = function(key){
+        delete sandbox[key];
+    };
 };
 
 
 function createPublicMethod(name){
     return function(){
-        var self = this,
-            
-            // @private
-            // sandbox
-            sandbox = createSandBox(self);
+        // @private
+        // sandbox
+        var sandbox = createSandBox(this);
         
-        // .set and .get methods won't be available util .setAttrs method excuted
-        createGetterSetter(self, sandbox);
+        // .set and .get methods won't be initialized util the first .set method excuted
+        createGetterSetter(this, sandbox);
         
-        return self[name].apply(self, arguments);
+        return this[name].apply(this, arguments);
     };
+};
+
+
+function getMethod(host, attr, name){
+    var method = attr[name];
+    
+    return typeof method === 'string' ? host[method] : method;
 };
 
 
@@ -165,7 +215,7 @@ function createSandBox(host){
 
 var EXT = attrs._EXT = {};
 
-['addAttr', 'get', 'set'].forEach(function(name){
+['addAttr', 'get', 'set', 'removeAttr'].forEach(function(name){
     EXT[name] = createPublicMethod(name);
 });
 
@@ -186,6 +236,7 @@ attrs.patch = function (host, attributes) {
 
     host._ATTRS = attributes;
 };
+
 
 /**
  2012-02-23  Kael:
