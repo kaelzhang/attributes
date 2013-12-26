@@ -1,5 +1,5 @@
 {
-    "name": "means",
+    "name": "attributes",
     "description": "Apply flavored getter and setter to objects.",
     "version": "1.2.1",
     "homepage": "https://github.com/kaelzhang/attributes",
