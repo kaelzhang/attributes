@@ -112,7 +112,7 @@ function getMethod(host, attr, name){
 function createGetterSetter(host, sandbox){
     var undef;
 
-    function _get (host, key, sandbox) {
+    function _get (host, key) {
         var attr = sandbox[key];
         
         return attr ? getValue(host, attr) : undef;
@@ -163,7 +163,7 @@ function createGetterSetter(host, sandbox){
     };
     
     host.get = function(key){
-        return arguments.length ? _get(this, key, sandbox) : _getAll(this);
+        return arguments.length ? _get(this, key) : _getAll(this);
     };
     
     host.addAttr = function (key, setting) {
