@@ -25,7 +25,8 @@ value     | mixed         | the default value (optional)
 setter    | function(v)   | the return value will be the real value to be set. `v` is the original value by user.
 getter    | function(v)   | the return value will be the return value of `ins.get(key)` method. `v` is the saved value.
 validator | function(v)   | if returns false, the value will not be saved.
-readOnly  | boolean       | if `readOnly` is set to `true`, 
+readOnly  | boolean       | if `readOnly` is set to `true`, the value will not be able to change.
+writeOnce | boolean       | could be changed only once.
 
 #### Examples
 
@@ -63,6 +64,16 @@ For the example above:
 ```js
 new A().get('a'); // returns 'AAA'
 ```
+
+### instance.get()
+
+Gets values of all keys.
+
+#### returns
+
+`Object`
+
+Notice that, changing the returned value will not affect the real value.
 
 ### instance.set(key, value)
 ### instance.set(keyMap)
