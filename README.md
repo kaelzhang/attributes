@@ -51,11 +51,13 @@ attributes.patch(A, {
 });
 ```
 
-Then, the instances which created by `new A` will have **THREE** methods:
+Then, the instances which created by `new A` will have **FOUR** methods:
 
-### instance.get(key)
+### .get(key)
 
 Gets a value by key.
+
+- key `String` the name of a key.
 
 #### returns
 
@@ -67,7 +69,7 @@ For the example above:
 new A().get('a'); // returns 'AAA'
 ```
 
-### instance.get()
+### .get()
 
 Gets values of all keys.
 
@@ -77,8 +79,8 @@ Gets values of all keys.
 
 Notice that, changing the returned value will not affect the real value.
 
-### instance.set(key, value)
-### instance.set(keyMap)
+### .set(key, value)
+### .set(keyMap)
 
 Sets a value or a bunch of values.
 
@@ -94,13 +96,23 @@ ins.get('a'); // 'B-new', cooked by the setter
 ```
 
 
-### instance.addAttr(key, attr=, override=false)
+### .addAttr(key, attr=, override=false)
 
-Add a new key.
+Adds a new key.
 
 - attr `Object` the attribute definition of the key
 - override `Boolean` whether should override existing attribute.
 
+### .removeAttr(key)
+
+Removes a key. After this, it will be no longer able to set or get the key.
+
+```js
+var ins = new A;
+ins.removeAttr('a');
+ins.get('a'); // undefined
+ins.set('a', 'foo'); // false
+```
 
 ## Installation
 
