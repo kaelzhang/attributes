@@ -1,6 +1,6 @@
 # attributes
 
-Apply flavored getter and setter to objects.
+`attributes` provides mechanisms for validation, setter and getter to objects or constructors.
 
 
 ## API Documentation
@@ -30,6 +30,8 @@ writeOnce | boolean       | could be changed only once.
 
 #### Examples
 
+To realize how `attributes` works, you might as well read the example below.
+
 ```js
 function A(){}
 
@@ -49,7 +51,7 @@ attributes.patch(A, {
 });
 ```
 
-Then, the instances which created by `new A` will have **THREE** methods.
+Then, the instances which created by `new A` will have **THREE** methods:
 
 ### instance.get(key)
 

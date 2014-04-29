@@ -24,7 +24,15 @@
     "scripts": {
         "test": "make test"
     },
-    "keywords": [],
+    "keywords": [
+      "getter",
+      "setter",
+      "validation",
+      "validator",
+      "hashmap",
+      "object",
+      "attributes"
+    ],
     "cortex": {
         "name": "attributes",
         "dependencies": {
